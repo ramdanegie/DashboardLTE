@@ -1,0 +1,956 @@
+<section class="content-header">
+  <h1>
+    Dashboard
+    <small>{{now | date}}</small> &nbsp;&nbsp;&nbsp;&nbsp;
+    <!-- <p-splitButton label="Ubah Tampilan" icon="pi pi-file" (onClick)="save('info')" [model]="items"></p-splitButton> -->
+
+  </h1>
+  <div class="breadcrumb buttonLuhur">
+    <li>
+      <!-- <p-toggleButton [(ngModel)]="checked"></p-toggleButton> -->
+      <!-- <a (click)="togglePasienMendaftar()"> -->
+      <!-- <i class="fa fa-dashboard"></i> Pasien Mendaftar -->
+      <p-selectButton [options]="types" [(ngModel)]="showTerlayani" class="ui-button-success"></p-selectButton>
+
+      <!-- <p-toggleButton [(ngModel)]="showTerlayani" class="buttonLuhur ui-button-rounded ui-button-secondary" onLabel="Pasien Terlayani"
+        offLabel="Pasien Mendaftar" onIcon="pi pi-users" offIcon="pi pi-user-minus" [style]="{'width':'230px' }"></p-toggleButton>
+      <br> -->
+      <!-- </a>
+    </li>
+    <li class="active">
+      <a (click)="togglePasienTerlayani()"> Pasien Terlayani
+      </a>-->
+    </li>
+  </div>
+</section>
+
+<section class="content">
+  <p-dialog header="Detail Pengunjung" [(visible)]="showRawatJalan" [modal]="true" [responsive]="true" [width]="1000"
+    [minWidth]="100" [minY]="50" [maximizable]="true" [baseZIndex]="10000" [positionTop]="100" appendTo="body">
+    <p-panel header="Daftar Pasien ">
+      <p-dataTable [value]="dataTableRajal" [rows]="5" [paginator]="true" [totalRecords]="totalRecords" [(selection)]="selected"
+        [rowsPerPageOptions]="[5,10,20]" [loading]="loading" loadingIcon="fa-spinner" [globalFilter]="gb" #dt
+        selectionMode="single" (onRowSelect)="onRowSelect($event)" expandableRows="true">
+
+        <p-column header="{{'No'}}" [style]="{'width':'40px'}">
+          <ng-template let-index="rowIndex+1" pTemplate="body">
+            {{index}}
+          </ng-template>
+        </p-column>
+        <p-column field="tglregistrasi" header="{{'Tgl Registrasi'}}">
+        </p-column>
+        <p-column field="noregistrasi" header="{{'No Registrasi'}}"></p-column>
+        <p-column field="nocm" header="{{'No RM'}}"></p-column>
+        <p-column field="namapasien" header="{{'Nama Pasien'}}"></p-column>
+        <!-- <p-column field="namadokter" header="{{'Dokter'}}"></p-column> -->
+        <p-column field="namaruangan" header="{{'Ruangan'}}"></p-column>
+        <!-- <p-column field="kelompokpasien" header="{{'Kelompok Pasien'}}"></p-column> -->
+        <!-- <p-column field="namarekanan" header="{{'Penjamin'}}"></p-column> -->
+        <p-column field="tglpulang" header="{{'Tgl Pulang'}}"></p-column>
+        <!-- <p-column field="nosep" header="{{'No SEP'}}"></p-column> -->
+
+      </p-dataTable>
+    </p-panel>
+    <!-- <p-footer>
+        <button type="button" pButton icon="pi pi-check" (click)="showRawatJalan=false" label="Yes"></button>
+        <button type="button" pButton icon="pi pi-close" (click)="showRawatJalan=false" label="No" class="ui-button-secondary"></button>
+      </p-footer> -->
+  </p-dialog>
+
+  <p-dialog header="Detail Pasien Farmasi" [(visible)]="showFarmasi" [modal]="true" [responsive]="true" [width]="1000"
+    [minWidth]="100" [minY]="50" [maximizable]="true" [baseZIndex]="10000" [positionTop]="100" appendTo="body">
+    <p-panel header="Daftar Pasien ">
+      <p-dataTable [value]="dataTableFarmasi" [rows]="5" [paginator]="true" [totalRecords]="totalRecords" [(selection)]="selected"
+        [rowsPerPageOptions]="[5,10,20]" [loading]="loading" loadingIcon="fa-spinner" [globalFilter]="gb" #dt
+        selectionMode="single" (onRowSelect)="onRowSelect($event)" expandableRows="true">
+
+        <p-column header="{{'No'}}" [style]="{'width':'40px'}">
+          <ng-template let-index="rowIndex+1" pTemplate="body">
+            {{index}}
+          </ng-template>
+        </p-column>
+        <p-column field="tglregistrasi" header="{{'Tgl Registrasi'}}">
+        </p-column>
+        <p-column field="noregistrasi" header="{{'No Registrasi'}}"></p-column>
+        <p-column field="nocm" header="{{'No RM'}}"></p-column>
+        <p-column field="namapasien" header="{{'Nama Pasien'}}"></p-column>
+        <p-column field="namaruangan" header="{{'Ruangan Asal'}}"></p-column>
+        <p-column field="ruanganfarmasi" header="{{'Ruangan Tujuan'}}"></p-column>
+        <p-column field="noresep" header="{{'No Resep'}}"></p-column> -->
+        <p-column field="tglresep" header="{{'Tgl Resep'}}"></p-column>
+        <p-column field="namalengkap" header="{{'Penulis Resep'}}"></p-column>
+
+      </p-dataTable>
+    </p-panel>
+  </p-dialog>
+
+  <div class="row">
+    <div class="col-lg-3 col-xs-6">
+
+      <div class="small-box bg-aqua-gradient" *ngIf="showTerlayani==false">
+        <div class="inner">
+          <!-- <h3>{{dataPasien.result !== Unspecified ? dataPasien.result.jumlahData  : 0 }}   </h3> -->
+          <h3>{{countRajal}}</h3>
+          <p>Pengunjung Rawat Jalan</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(18)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+      <div class="small-box bg-red-active" *ngIf="showTerlayani==true">
+        <div class="inner">
+          <h3>{{countRajalTerlayani}}</h3>
+          <p>Pasien Rawat Jalan</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(18, true)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+
+    </div>
+
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-green-gradient" *ngIf="showTerlayani==false">
+        <div class="inner">
+          <h3>{{countIgd}}
+            <!-- <sup style="font-size: 20px">%</sup> -->
+          </h3>
+          <p>Pengunjung IGD</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien-emergency.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(24)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+      <div class="small-box bg-blue-active" *ngIf="showTerlayani==true">
+        <div class="inner">
+          <h3>{{countIgdTerlayani}}
+            <!-- <sup style="font-size: 20px">%</sup> -->
+          </h3>
+          <p>Pasien IGD Terlayani</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien-emergency.png">
+        </div>
+        <a class="small-box-footer" (click)=" klikDetails(24, true)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-yellow-gradient" *ngIf="showTerlayani==false">
+        <div class="inner">
+          <h3>{{countRanap}}</h3>
+          <p>Pengunjung Rawat Inap</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien-rawat-inap.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(16)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+      <div class="small-box bg-yellow-active" *ngIf="showTerlayani==true">
+        <div class="inner">
+          <h3>{{countMasihDirawatTerlayani}}</h3>
+          <p>Pasien Rawat Inap</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien-rawat-inap.png">
+        </div>
+        <a class="small-box-footer"  (click)=" klikDetails(16, true)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-red-gradient" *ngIf="showTerlayani==false">
+        <div class="inner">
+          <h3>{{countRadiologi}}</h3>
+          <p>Pengunjung Radiologi</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-radiologi.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(27)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+      <div class="small-box bg-aqua-active" *ngIf="showTerlayani==true">
+        <div class="inner">
+          <h3>{{countRadiologiTerlayani}}</h3>
+          <p>Pasien Radiologi Terlayani</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-radiologi.png">
+        </div>
+        <a class="small-box-footer" (click)=" klikDetails(27, true)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-light-blue-gradient" *ngIf="showTerlayani==false">
+        <div class="inner">
+          <h3>{{countLab}}</h3>
+          <p>Pengunjung Laboratorium</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-laboratorium.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(3)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+      <div class="small-box bg-orange-active" *ngIf="showTerlayani==true">
+        <div class="inner">
+          <h3>{{countLabTerlayani}}</h3>
+          <p>Pasien Laboratorium Terlayani</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-laboratorium.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(3, true)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+
+    <div class="col-lg-3 col-xs-6">
+      <div class="small-box bg-maroon-gradient" *ngIf="showTerlayani==false">
+        <div class="inner">
+          <h3>{{countRehab}}</h3>
+          <p>Pengunjung Rehabilitasi Medik</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(28)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+      <div class="small-box bg-fuchsia-active" *ngIf="showTerlayani==true">
+        <div class="inner">
+          <h3>{{countRehabTerlayani}}</h3>
+          <p>Pasien Rehabilitasi Medik</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(28, true)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-xs-6" *ngIf="showTerlayani==false">
+
+      <div class="small-box bg-purple-gradient">
+        <div class="inner">
+          <h3>{{countTotal |number}}</h3>
+          <p>TOTAL PASIEN</p>
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien.png">
+        </div>
+        <a class="small-box-footer">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-xs-6" *ngIf="showTerlayani==true">
+      <div class="small-box bg-teal-gradient">
+        <div class="inner">
+          <!-- <h3 style="opacity: 0;">-</h3> -->
+          <h3>{{countBedahTerlayani |number}}</h3>
+          <p>Pasien Bedah Telayani</p>
+          <!-- <h3 style="opacity: 0;">-</h3>
+          <p style="opacity: 0;">-</p> -->
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien-operasi.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(25, true)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-xs-6" *ngIf="showTerlayani==true">
+      <div class="small-box bg-olive-active">
+        <div class="inner">
+          <!-- <h3 style="opacity: 0;">-</h3> -->
+          <h3>{{countFarmasiTerlayani |number}}</h3>
+          <p>Resep Farmasi</p>
+          <!-- <h3 style="opacity: 0;">-</h3>
+            <p style="opacity: 0;">-</p> -->
+        </div>
+        <div class="icon">
+          <img class="icon-pasien" src="assets/img/icon-pasien-operasi.png">
+        </div>
+        <a class="small-box-footer" (click)="klikDetails(14, false)">Detail
+          <i class="fa fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-md-12 col-xs-12">
+      <mk-box header="Trend Pengunjung Pasien Rawat Jalan " [isCollapsable]="true" [isSolid]="true" [isRemovable]="true"
+        boxColor="danger">
+        <p-progressSpinner *ngIf="isShowTrend" class="loading-style"></p-progressSpinner>
+        <!-- <img  *ngIf="isShow" src="assets/img/loading-icon.gif" class="loading-style"/> -->
+        <div class="col-lg-12" [chart]="chart">{{chart}}</div>
+      </mk-box>
+    </div>
+  </div>
+
+  <div class="row">
+    <section class="col-lg-6 connectedSortable">
+      <mk-tabs>
+        <mk-tabs-header>
+          <i class="fa fa-calendar"></i> Daftar Registrasi Pasien Menurut Cara Daftar </mk-tabs-header>
+
+        <mk-tab>
+          <mk-tab-header>Donut Chart </mk-tab-header>
+          <mk-tab-content>
+            <!-- <p-progressSpinner  *ngIf="isShowCaraDaftar"  class="loading-style"></p-progressSpinner> -->
+            <!-- <mk-tab [chart]="chartJenisPenjadwalanPie"></mk-tab> -->
+            <div [chart]="chartJenisPenjadwalanPie"></div>
+          </mk-tab-content>
+        </mk-tab>
+        <mk-tab>
+          <mk-tab-header>Grafik Chart</mk-tab-header>
+          <mk-tab-content>
+            <div class="responsive">
+              <!-- <mk-tab  [chart]="chartJenisPenjadwalanLine"></mk-tab > -->
+              <div [chart]="chartJenisPenjadwalanLine"></div>
+            </div>
+          </mk-tab-content>
+        </mk-tab>
+      </mk-tabs>
+      <mk-box header="Informasi Kedatangan Pengunjung Pasien Rawat Jalan" boxColor="red" [isRemovable]="true"
+        contentClasses="table-responsive">
+        <!-- material table -->
+        <div class="example-header">
+          <mat-form-field>
+            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Pencarian">
+          </mat-form-field>
+        </div>
+
+        <div class="example-container mat-elevation-z8">
+
+          <mat-table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="namaruangan">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> POLI </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.namaruangan}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="total">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> TOTAL </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.total}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="diperiksa">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> DIPERIKSA </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.diperiksa}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="belumperiksa">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> BELUM DIPERIKSA </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.belumperiksa}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="batalregistrasi">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> BATAL REGISTRASI </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.batalregistrasi}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+        </div>
+
+
+        <!-- end mat table -->
+
+        <!-- <table id="example1" class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Poli</th>
+              <th>Diperiksa</th>
+              <th>Belum Diperiksa</th>
+              <th>Batal Registrasi</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let items of gridInfoKedatangan ">
+            <tr >
+              <td>
+                {{items.namaruangan }}
+              </td>
+              <td>
+                {{items.diperiksa }}
+              </td>
+              <td>
+                {{items.belumperiksa }}
+              </td>
+              <td>
+                {{items.batalregistrasi }}
+              </td>
+            </tr>
+
+          </tbody>
+        </table> -->
+      </mk-box>
+      <mk-box header="Pemakaian Tempat Tidur" styleClass="box" boxColor="info" headerStyleClass="box-header">
+        <div class="col-lg-6">
+          <div class="user-block">
+            <img class="img-circle" src="assets/img/icon-tt-balita-perempuan.png" alt="User Image">
+            <span class="usergender">Bayi Perempuan</span>
+            <span class="userage">0 - 30 Hari</span>
+            <span class="useramount">{{countBalitaCewe}}</span>
+          </div>
+          <div class="user-block">
+            <img class="img-circle" src="assets/img/icon-tt-anak-perempuan.png" alt="User Image">
+
+            <span class="usergender">Anak Peremuan</span>
+            <span class="userage">>30 Hari - 17 Tahun</span>
+            <span class="useramount">{{countAnakCewe}}</span>
+          </div>
+          <div class="user-block">
+            <img class="img-circle" src="assets/img/icon-tt-perempuan-dewasa.png" alt="User Image">
+            <span class="usergender">Perempuan Dewasa</span>
+            <span class="userage">>17 - 50 Tahun</span>
+            <span class="useramount">{{countCeweDewasa}}</span>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="user-block">
+            <img class="img-circle" src="assets/img/icon-tt-balita-laki-laki.png" alt="User Image">
+            <span class="usergender">Bayi Laki-laki</span>
+            <span class="userage">0 - 30 Hari</span>
+            <span class="useramount">{{countBalitaLaki}}</span>
+          </div>
+          <div class="user-block">
+            <img class="img-circle" src="assets/img/icon-tt-anak-laki-laki.png" alt="User Image">
+            <span class="usergender">Anak Laki-laki</span>
+            <span class="userage">>30 Hari - 17 Tahun</span>
+            <span class="useramount">{{countAnakLaki}}</span>
+          </div>
+          <div class="user-block">
+            <img class="img-circle" src="assets/img/icon-tt-perempuan-geriatri.png" alt="User Image">
+            <span class="usergender">Geriatri</span>
+            <span class="userage">>50 Tahun</span>
+            <span class="useramount">{{countGeriatri}}</span>
+          </div>
+        </div>
+      </mk-box>
+      <mk-box header="10 Besar Asal Perujuk Pasien BPJS" styleClass="box" boxColor="#8a2be2" headerStyleClass="box-header">
+        <!-- <mk-box [chart]="chart10PerujukBpjs"></mk-box> -->
+        <div [chart]="chart10PerujukBpjs"></div>
+      </mk-box>
+      <mk-box header="10 Besar Diagnosa" styleClass="box" boxColor="#ff288d" headerStyleClass="box-header">
+        <!-- <mk-box [chart]="chart10Diagnosa"></mk-box> -->
+        <div [chart]="chart10Diagnosa"></div>
+      </mk-box>
+      <mk-box header="Demografi" styleClass="box" boxColor="#ffc300" headerStyleClass="box-header">
+
+      </mk-box>
+    </section>
+    <section class="col-lg-6 connectedSortable">
+      <!-- <mk-alert backgroundColor="info">
+        <h4>
+          <i class="icon fa fa-bar"></i>
+          Kunjungan Rumah Sakit
+        </h4>
+        <div [chart]="chartKunjunganRs" style="height: 250px;"></div>
+      </mk-alert> -->
+      <!-- <mk-box header="Kunjungan Rumah Sakit" boxColor="#3399ff" [isRemovable]="true" [isSolid]="true">
+        <div class="box-body chart-responsive">
+        </div>
+      </mk-box> -->
+      <div class="box box-solid bg-maroon-gradient">
+        <div class="box-header">
+          <i class="fa fa-music"></i>
+          <h3 class="box-title">Detail Cara Daftar</h3>
+          <div class="box-tools pull-right">
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <div class="box-body border-radius-none">
+          <mk-tabs>
+            <mk-tab>
+              <mk-tab-header>Rawat Jalan</mk-tab-header>
+              <mk-tab-content>
+                <!-- <p-progressSpinner  *ngIf="isShowCaraDaftar"  class="loading-style"></p-progressSpinner> -->
+                <div class="responsive">
+                  <div [chart]="chartCaraDaftarRajal" style="height: 338px;"></div>
+                </div>
+              </mk-tab-content>
+            </mk-tab>
+            <mk-tab>
+              <mk-tab-header>Rawat Inap </mk-tab-header>
+              <mk-tab-content>
+                <div [chart]="chartCaraDaftarRanap" style="height: 338px;"></div>
+              </mk-tab-content>
+            </mk-tab>
+            <mk-tab>
+              <mk-tab-header>Rehab </mk-tab-header>
+              <mk-tab-content>
+                <div [chart]="chartCaraDaftarRehab" style="height: 338px;"></div>
+              </mk-tab-content>
+            </mk-tab>
+            <mk-tab>
+              <mk-tab-header>IGD </mk-tab-header>
+              <mk-tab-content>
+                <div [chart]="chartCaraDaftarIgd" style="height: 338px;"></div>
+              </mk-tab-content>
+            </mk-tab>
+            <mk-tab>
+              <mk-tab-header>Laboratorium </mk-tab-header>
+              <mk-tab-content>
+                <div [chart]="chartCaraDaftarLab" style="height: 338px;"></div>
+              </mk-tab-content>
+            </mk-tab>
+            <mk-tab>
+              <mk-tab-header>Radiologi </mk-tab-header>
+              <mk-tab-content>
+                <div [chart]="chartCaraDaftarRad" style="height: 338px;"></div>
+              </mk-tab-content>
+            </mk-tab>
+          </mk-tabs>
+        </div>
+
+      </div>
+
+      <div class="box box-solid bg-teal-gradient">
+        <div class="box-header">
+          <i class="fa fa-home"></i>
+          <h3 class="box-title">Kunjungan Rumah Sakit Berdasarkan Jenis Pasien</h3>
+          <div class="box-tools pull-right">
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <div class="box-body border-radius-none">
+          <mk-tabs>
+            <mk-tab>
+              <mk-tab-header>Semua</mk-tab-header>
+              <mk-tab-content>
+                <div class="responsive">
+                  <div [chart]="chartKunjungnJenisPasien" style="height: 338px;"></div>
+                </div>
+              </mk-tab-content>
+            </mk-tab>
+            <mk-tab>
+              <mk-tab-header>Detail Per-Departemen</mk-tab-header>
+              <mk-tab-content>
+                <div class="responsive">
+                  <div [chart]="chartDetailKelompokPasien" style="height: 338px;"></div>
+
+                </div>
+              </mk-tab-content>
+            </mk-tab>
+            <!-- <mk-tab>
+            <mk-tab-header>Rawat Inap </mk-tab-header>
+            <mk-tab-content>
+
+            </mk-tab-content>
+          </mk-tab>
+          <mk-tab>
+            <mk-tab-header>Rehab </mk-tab-header>
+            <mk-tab-content>
+
+            </mk-tab-content>
+          </mk-tab>
+          <mk-tab>
+            <mk-tab-header>IGD </mk-tab-header>
+            <mk-tab-content>
+
+            </mk-tab-content>
+          </mk-tab>
+          <mk-tab>
+            <mk-tab-header>Penunjang </mk-tab-header>
+            <mk-tab-content>
+
+            </mk-tab-content>
+          </mk-tab> -->
+
+          </mk-tabs>
+        </div>
+
+        <!-- <div class="box-body border-radius-none">
+          <div [chart]="chartKunjungnJenisPasien" style="height: 338px;"></div>
+        </div> -->
+
+      </div>
+
+      <div class="box box-solid bg-green-gradient">
+        <div class="box-header">
+          <i class="fa fa-inbox"></i>
+
+          <h3 class="box-title">Informasi Kedatangan Menurut Jenis Pelayanan</h3>
+
+          <div class="pull-right box-tools">
+
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="box-body chart-responsive">
+          <div [chart]="chartJenisPelayanan" style="height: 338px;"></div>
+        </div>
+
+      </div>
+
+
+      <div class="box box-solid bg-aqua-gradient">
+        <div class="box-header">
+          <i class="fa fa-map-marker"></i>
+          <h3 class="box-title">Pengunjung Rawat Inap</h3>
+          <div class="pull-right box-tools">
+
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <div class="box-body chart-responsive">
+          <div [chart]="chartKunjunganRanap" style="height: 338px;"></div>
+        </div>
+
+      </div>
+
+      <div class="box box-solid bg-purple-gradient">
+        <div class="box-header">
+          <i class="fa fa-th"></i>
+          <h3 class="box-title">Data Kegiatan Pelayanan Rumah Sakit</h3>
+          <div class="pull-right box-tools">
+
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <!--    <div class="example-header">
+          <mat-form-field>
+            <input matInput (keyup)="applyFilterss($event.target.value)" placeholder="Pencarian">
+          </mat-form-field>
+        </div> -->
+          <!-- <div class="example-container mat-elevation-z8">
+            <mat-table [dataSource]="dataSourceBor">
+              <ng-container matColumnDef="bulan">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Bulan </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.bulan}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="bor">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> BOR </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.bor}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="alos">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> ALOS </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.alos}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="bto">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> BTO </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.bto}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="toi">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> TOI </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.toi}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="gdr">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> GDR </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.gdr}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="ndr">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> NDR </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.ndr}}</mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumnsBor"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumnsBor;">
+              </mat-row>
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+          </div> -->
+          <!-- <table class="table table-bordered">
+            <tr>
+              <th>Tanggal</th>
+              <th>BOR</th>
+              <th>ALOS</th>
+              <th>TOI</th>
+              <th>BTO</th>
+              <th>NDR</th>
+              <th>GDR</th>
+            </tr>
+            <tr *ngFor="let items of gridBorLos">
+              <td>{{items.bulan}}</td>
+              <td>{{items.bor}}</td>
+              <td>{{items.alos}}</td>
+              <td>{{items.toi}}</td>
+              <td>{{items.bto}}</td>
+              <td>{{items.ndr}}</td>
+              <td>{{items.gdr}}</td>
+            </tr>
+           
+            <tr style="background:rgba(0,0,0,.3);">
+              <td>TAHUN {{tahun}}</td>
+              <td>{{JmlBOR}}</td>
+              <td>{{JmlLOS}}</td>
+              <td>{{JmlTOI}}</td>
+              <td>{{JmlBTO}}</td>
+              <td>{{JmlNDR}}</td>
+              <td>{{JmlGDR}}</td>
+            </tr>
+          </table> -->
+          <div class="row" *ngFor="let items of gridBorLos">
+            <div class="col-md-4 col-xs-12">
+              <mk-box-info iconBackgroundColor="aqua" iconStyleClass="fa fa-bed">
+                <p [style.color]="'black'"> <b>BOR</b> </p>
+                <p [style.color]="'black'"> {{items.bor}}</p>
+              </mk-box-info>
+            </div>
+            <div class="col-md-4 col-xs-12">
+              <mk-box-info iconBackgroundColor="yellow" iconStyleClass="fa fa-user-md">
+                <p [style.color]="'black'"> <b>ALOS</b> </p>
+                <p [style.color]="'black'"> {{items.alos}}</p>
+              </mk-box-info>
+            </div>
+            <div class="col-md-4 col-xs-12">
+              <mk-box-info iconBackgroundColor="green" iconStyleClass="fa fa-arrow-circle-left">
+                <p [style.color]="'black'"> <b>TOI</b> </p>
+                <p [style.color]="'black'"> {{items.toi}}</p>
+              </mk-box-info>
+            </div>
+
+            <div class="col-md-4 col-xs-12">
+              <mk-box-info iconBackgroundColor="red" iconStyleClass="fa fa-user-plus">
+                <p [style.color]="'black'"> <b>BTO</b> </p>
+                <p [style.color]="'black'"> {{items.bto}}</p>
+              </mk-box-info>
+            </div>
+            <div class="col-md-4 col-xs-12">
+              <mk-box-info iconBackgroundColor="blue" iconStyleClass="fa fa-exclamation-circle">
+                <p [style.color]="'black'"> <b>NDR</b> </p>
+                <p [style.color]="'black'"> {{items.ndr}}</p>
+              </mk-box-info>
+            </div>
+            <div class="col-md-4 col-xs-12">
+              <mk-box-info iconBackgroundColor="orange" iconStyleClass="fa fa-exclamation-triangle">
+                <p [style.color]="'black'"> <b>GDR</b> </p>
+                <p [style.color]="'black'"> {{items.gdr}}</p>
+              </mk-box-info>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="box box-solid bg-yellow-gradient">
+        <div class="box-header">
+          <i class="fa fa-hotel"></i>
+          <h3 class="box-title">Ketersediaan Tempat Tidur Per Kelas</h3>
+          <div class="pull-right box-tools">
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+            <!-- <button type="button" class="btn btn-adminrs btn-sm" data-widget="collapse">
+              <i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-adminrs btn-sm" data-widget="remove">
+              <i class="fa fa-times"></i>
+            </button> -->
+          </div>
+        </div>
+        <div class="box-body">
+          <table class="table table-bordered">
+            <tr>
+              <th>Kelas</th>
+              <th>Jumlah Tempat Tidur Kosong</th>
+            </tr>
+            <tr>
+              <td>Kelas I</td>
+              <td>{{ttKelas1}}</td>
+            </tr>
+            <tr>
+              <td>Kelas II</td>
+              <td>{{ttKelas2}}</td>
+            </tr>
+            <tr>
+              <td>Kelas III</td>
+              <td>{{ttKelas3}}</td>
+            </tr>
+            <tr>
+              <td>VIP A</td>
+              <td>{{ttVipA}}</td>
+            </tr>
+            <tr>
+              <td>VIP B</td>
+              <td>{{ttVipB}}</td>
+            </tr>
+            <tr>
+              <td>Non Kelas</td>
+              <td>{{ttNonKelas}}</td>
+            </tr>
+            <tr style="background:rgba(0,0,0,.3);">
+              <td>JUMLAH</td>
+              <td>{{ttJumlah}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</section>
