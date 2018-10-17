@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './shared/auth.guard';
+import { DashboardPendapatanComponent } from './+module/dashboard-pendapatan/dashboard-pendapatan.component';
+import { DashboardSdmComponent } from './+module/dashboard-sdm/dashboard-sdm.component';
+import { DashboardPersediaanComponent } from './+module/dashboard-persediaan/dashboard-persediaan.component';
 
 const routes: Routes = [
   // {
@@ -32,6 +35,7 @@ const routes: Routes = [
           }
         ]
       },
+
       {
         path: 'accordion',
         loadChildren: './+accordion/accordion.module#AccordionModule',
@@ -129,7 +133,29 @@ const routes: Routes = [
         }
       }
     ]
-  }, {
+  },
+  {
+    path: 'dashboard-pendapatan',
+    component: DashboardPendapatanComponent,
+    // data: {
+    //   title: 'Pendapatan ',
+    // }
+  },
+  {
+    path: 'dashboard-sdm',
+    component: DashboardSdmComponent,
+    // data: {
+    //   title: 'SDM',
+    // }
+  },
+  {
+    path: 'dashboard-persediaan',
+    component: DashboardPersediaanComponent,
+    // data: {
+    //   title: 'Persediaan',
+    // }
+  },
+  {
     path: 'form',
     data: {
       title: 'Form',
@@ -163,4 +189,6 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 
-export class AppRoutingModule { }
+export class AppRoutingModule {
+
+}

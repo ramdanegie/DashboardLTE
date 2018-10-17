@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
       window.localStorage.setItem('datauserlogin', JSON.stringify(dataUserLogin));
       window.localStorage.setItem('pegawai', JSON.stringify(this.result.data.pegawai));
       
-      this.router.navigate(['']);
+      this.router.navigate(['/home']);
       // this.appservice.getTransaksi('eis/hakakses?pegawaiId=' + this.result.data.pegawai.id).subscribe(data => {
       //   this.resultAkses = data;
       //   if (this.resultAkses == 'sukses') {

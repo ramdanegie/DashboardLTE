@@ -1,0 +1,277 @@
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<section class="content-header">
+  <h1>
+    Pendapatan
+    <small>{{now |date}}</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a routerLink="/dashboad-pendapatan"><i class="fa fa-home"></i>Dashboard Pendapatan</a></li>
+  </ol>
+</section>
+<section class="content">
+  <div class="row">
+    <div class="col-md-12 col-xs-12">
+      <div class="box box-success">
+        <div class="box-header">
+          <i class="fa fa-bar-chart"></i>
+          <h3 class="box-title">Pendapatan Rumah Sakit</h3>
+          <div class="box-tools pull-right">
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <div class="box-body chart-responsive">
+          <p-progressSpinner *ngIf="isShowTrend" class="loading-style"></p-progressSpinner>
+          <!-- <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div> -->
+          <div [chart]="chartPendapatan" id="container"></div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 col-xs-6">
+      <mk-tabs>
+        <mk-tabs-header>
+          <i class="fa fa-bar-chart"></i>Pendapatan PerJenis Pasien</mk-tabs-header>
+        <mk-tab>
+          <mk-tab-header>Pie </mk-tab-header>
+          <mk-tab-content>
+            <div [chart]="chartPerKelompokPasienPie"></div>
+          </mk-tab-content>
+        </mk-tab>
+        <mk-tab>
+          <mk-tab-header>Bar</mk-tab-header>
+          <mk-tab-content>
+            <div [chart]="chartPerKelompokPasien"></div>
+          </mk-tab-content>
+        </mk-tab>
+      </mk-tabs>
+      <!-- <div class="box box-warning">
+        <div class="box-header">
+          <i class="fa fa-bar-chart"></i>
+          <h3 class="box-title">Pendapatan PerJenis Pasien</h3>
+          <div class="box-tools pull-right">
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <div class="box-body chart-responsive">
+            
+          <div [chart]="chartPerKelompokPasien"></div>
+          <div [chart]="chartPerKelompokPasienPie"></div>
+        </div>
+      </div> -->
+    </div>
+    <div class="col-md-6 col-xs-6">
+      <mk-tabs>
+        <mk-tabs-header>
+          <i class="fa fa-bar-chart"></i>Penerimaan Rumah Sakit </mk-tabs-header>
+        <mk-tab>
+          <mk-tab-header>Layanan </mk-tab-header>
+          <mk-tab-content>
+            <div [chart]="chartPenerimaan"></div>
+          </mk-tab-content>
+        </mk-tab>
+        <mk-tab>
+          <mk-tab-header>Non Layanan</mk-tab-header>
+          <mk-tab-content>
+            <div [chart]="chartPenerimaanNonLayanan"></div>
+          </mk-tab-content>
+        </mk-tab>
+      </mk-tabs>
+      <!-- <div class="box box-danger">
+        <div class="box-header">
+          <i class="fa fa-bar-chart"></i>
+          <h3 class="box-title">Penerimaan Rumah Sakit</h3>
+          <div class="box-tools pull-right">
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+
+            </div>
+          </div>
+        </div>
+        <div class="box-body chart-responsive">
+          <div [chart]="chartPenerimaan"></div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+  <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <div class="box box-info">
+          <div class="box-header">
+            <i class="fa fa-bar-chart"></i>
+            <h3 class="box-title">Trend Pendapatan</h3>
+            <div class="box-tools pull-right">
+              <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+                <div class="btn-group">
+                  <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-bars"></i>
+                  </button>
+                  <ul class="dropdown-menu pull-right" role="menu">
+                    <li>
+                      <a href="#">Add new event</a>
+                    </li>
+                    <li>
+                      <a href="#">Clear events</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                      <a href="#">View calendar</a>
+                    </li>
+                  </ul>
+                </div>
+                <button class="btn btn-default btn-sm" data-widget="collapse">
+                  <i class="fa fa-minus"></i>
+                </button>
+                <button class="btn btn-default btn-sm" data-widget="remove">
+                  <i class="fa fa-times"></i>
+                </button>
+  
+              </div>
+            </div>
+          </div>
+          <div class="box-body chart-responsive">
+            <p-progressSpinner *ngIf="isShowTrendPen" class="loading-style"></p-progressSpinner>
+            <div [chart]="chartTrendPendapatan" ></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  <div class="row">
+    <div class="col-md-12 col-xs-12">
+      <div class="box box-danger">
+        <div class="box-header">
+          <i class="fa fa-bar-chart"></i>
+          <h3 class="box-title">Target & Realisasi Pendapatan Rumah Sakit</h3>
+          <div class="box-tools pull-right">
+            <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+              <div class="btn-group">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+                </button>
+                <ul class="dropdown-menu pull-right" role="menu">
+                  <li>
+                    <a href="#">Add new event</a>
+                  </li>
+                  <li>
+                    <a href="#">Clear events</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#">View calendar</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-default btn-sm" data-widget="collapse">
+                <i class="fa fa-minus"></i>
+              </button>
+              <button class="btn btn-default btn-sm" data-widget="remove">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="box-body chart-responsive">
+          <div [chart]="chartTargetRealisi"></div>
+        </div>
+        <div class="box-body chart-responsive">
+          <p-panel header="Title" [toggleable]="true" [collapsed]="true">
+            <p-table [columns]="cols" [value]="dataGrid" selectionMode="single" [(selection)]="selectedCar1" [value]="dataTableRajal"
+              [rows]="5" [paginator]="true" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5,10,20]" [loading]="loading"
+              loadingIcon="fa-spinner" expandableRows="true">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th *ngFor="let col of columns">
+                    {{col.header}}
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr [pSelectableRow]="rowData">
+                  <td *ngFor="let col of columns">
+                    {{rowData[col.field]}}
+                  </td>
+                </tr>
+              </ng-template>
+
+            </p-table>
+          </p-panel>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

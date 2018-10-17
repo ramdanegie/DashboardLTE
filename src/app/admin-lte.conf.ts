@@ -10,26 +10,30 @@ export const adminLteConf = {
   // layout: 'normal',
   sidebarLeftMenu: [
     { label: 'MAIN NAVIGATION', separator: true },
-    { label: 'Dashboard', route: '/home', iconClasses: 'fa fa-road', pullRights: [{ text: 'New', classes: 'label pull-right bg-green' }] },
-    {
-      label: 'Kunjungan Pasien', iconClasses: 'fa fa-files-o', pullRights: [{ text: '6', classes: 'label pull-right bg-red' }],
-      children: [
-        { label: 'Rawat Jalan', route: 'home/kunjungan/rawatjalan' },
-        { label: 'Rawat Inap', route: 'home/kunjungan/rawatinap' },
-        { label: 'IGD', route: 'home/kunjungan/rawatjalan' },
-        { label: 'Laboratorium', route: 'home/kunjungan/rawatinap' },
-        { label: 'Radiologi', route: 'home/kunjungan/rawatinap' },
-        { label: 'Operasi', route: 'home/kunjungan/rawatinap' }
+    { label: 'Dashboard', route: '/home', iconClasses: 'fa fa-dashboard', pullRights: [{ text: 'New', classes: 'label pull-right bg-red' }] },
+    { label: 'Dashboard Pendapatan', route: '/dashboard-pendapatan', iconClasses: 'fa fa-money', pullRights: [{ text: '1', classes: 'label pull-right bg-yellow' }] },
+    { label: 'Dashboard SDM', route: '/dashboard-sdm', iconClasses: 'fa fa-users', pullRights: [{ text: '1', classes: 'label pull-right bg-green' }] },
+    { label: 'Dashboard Persediaan', route: '/dashboard-persediaan', iconClasses: 'fa fa-cubes', pullRights: [{ text: '1', classes: 'label pull-right bg-blue' }] },
+    
+    // {
+    //   label: 'Kunjungan Pasien', iconClasses: 'fa fa-files-o', pullRights: [{ text: '6', classes: 'label pull-right bg-red' }],
+    //   children: [
+    //     { label: 'Rawat Jalan', route: 'home/kunjungan/rawatjalan' },
+    //     { label: 'Rawat Inap', route: 'home/kunjungan/rawatinap' },
+    //     { label: 'IGD', route: 'home/kunjungan/rawatjalan' },
+    //     { label: 'Laboratorium', route: 'home/kunjungan/rawatinap' },
+    //     { label: 'Radiologi', route: 'home/kunjungan/rawatinap' },
+    //     { label: 'Operasi', route: 'home/kunjungan/rawatinap' }
 
-      ]
-    },
-    {
-      label: 'Remunerasi', iconClasses: 'fa fa-money', pullRights: [{ text: '1', classes: 'label pull-right bg-yellow' }],
-      children: [
-        { label: 'Pagu Remunerasi', route: 'home/kunjungan/rawatjalan' }
+    //   ]
+    // },
+    // {
+    //   label: 'Remunerasi', iconClasses: 'fa fa-money', pullRights: [{ text: '1', classes: 'label pull-right bg-yellow' }],
+    //   children: [
+    //     { label: 'Pagu Remunerasi', route: 'home/kunjungan/rawatjalan' }
 
-      ]
-    },
+    //   ]
+    // },
     // {label: 'Layout', iconClasses: 'fa fa-th-list', children: [
     //     {label: 'Configuration', route: 'layout/configuration'},
     //     {label: 'Custom', route: 'layout/custom'},

@@ -2,11 +2,12 @@
 <div class="hold-transition login-page " [ngStyle]="{background: 'url(assets/img/welcomeScreenNew.jpg)'}">
   <div class="login-box">
     <div class="login-logo">
-      <a routerLink="#" >
+      <a routerLink="/home" >
       <div [style.color]="'white'"> <b>RSAB</b> Harapan Kita</div>
       </a>
     </div>
-    <p-toast></p-toast>
+    <!-- <p-toast></p-toast> -->
+    <p-growl></p-growl>
     <mat-card class="example-card">
       <mat-card-header>
         <mat-card-title>Silahkan Login</mat-card-title>

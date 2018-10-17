@@ -63,7 +63,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InjectionToken, FactoryProvider } from '@angular/core';
 import { AgmCoreModule } from '@agm/core';
-import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 export const WINDOW = new InjectionToken<Window>('window');
 import { AuthGuard } from './shared/auth.guard';
 // Import PrimeNG modules
@@ -127,7 +127,11 @@ import { ToolbarModule } from 'primeng/primeng';
 import { TooltipModule } from 'primeng/primeng';
 import { TreeModule } from 'primeng/primeng';
 import { TreeTableModule } from 'primeng/primeng';
-
+import { TableModule } from 'primeng/table';
+import { DashboardPendapatanComponent } from './+module/dashboard-pendapatan/dashboard-pendapatan.component';
+import { DashboardSdmComponent } from './+module/dashboard-sdm/dashboard-sdm.component';
+import { DashboardPersediaanComponent } from './+module/dashboard-persediaan/dashboard-persediaan.component';
+import * as drilldown from 'highcharts/modules/drilldown.src.js';
 const windowProvider: FactoryProvider = {
   provide: WINDOW,
   useFactory: () => window
@@ -196,68 +200,69 @@ export const WINDOW_PROVIDERS = [
     }),
     GMapModule,
     // prime ng module
-     // prime ng module 
-     AutoCompleteModule,
-     BreadcrumbModule,
-     ButtonModule,
-     CalendarModule,
-     CarouselModule,
-     ChartModule,
-     CheckboxModule,
-     ChipsModule,
-     CodeHighlighterModule,
-     ConfirmDialogModule,
-     SharedModule,
-     ContextMenuModule,
-     DataGridModule,
-     DataListModule,
-     DataScrollerModule,
-     DataTableModule,
-     DialogModule,
-     DragDropModule,
-     DropdownModule,
-     EditorModule,
-     FieldsetModule,
-     FileUploadModule,
-     GalleriaModule,
-     GrowlModule,
-     InputMaskModule,
-     InputSwitchModule,
-     InputTextModule,
-     InputTextareaModule,
-     LightboxModule,
-     ListboxModule,
-     MegaMenuModule,
-     MenuModule,
-     MenubarModule,
-     MessagesModule,
-     MultiSelectModule,
-     OrderListModule,
-     OverlayPanelModule,
-     PaginatorModule,
-     PanelModule,
-     PanelMenuModule,
-     PasswordModule,
-     PickListModule,
-     ProgressBarModule,
-     RadioButtonModule,
-     RatingModule,
-     ScheduleModule,
-     SelectButtonModule,
-     SlideMenuModule,
-     SliderModule,
-     SpinnerModule,
-     SplitButtonModule,
-     StepsModule,
-     TabMenuModule,
-     TabViewModule,
-     TerminalModule,
-     TieredMenuModule,
-     ToggleButtonModule,
-     ToolbarModule,
-     TooltipModule,
-     TreeModule,
-     TreeTableModule,
+    // prime ng module 
+    AutoCompleteModule,
+    BreadcrumbModule,
+    ButtonModule,
+    CalendarModule,
+    CarouselModule,
+    ChartModule,
+    CheckboxModule,
+    ChipsModule,
+    CodeHighlighterModule,
+    ConfirmDialogModule,
+    SharedModule,
+    ContextMenuModule,
+    DataGridModule,
+    DataListModule,
+    DataScrollerModule,
+    DataTableModule,
+    DialogModule,
+    DragDropModule,
+    DropdownModule,
+    EditorModule,
+    FieldsetModule,
+    FileUploadModule,
+    GalleriaModule,
+    GrowlModule,
+    InputMaskModule,
+    InputSwitchModule,
+    InputTextModule,
+    InputTextareaModule,
+    LightboxModule,
+    ListboxModule,
+    MegaMenuModule,
+    MenuModule,
+    MenubarModule,
+    MessagesModule,
+    MultiSelectModule,
+    OrderListModule,
+    OverlayPanelModule,
+    PaginatorModule,
+    PanelModule,
+    PanelMenuModule,
+    PasswordModule,
+    PickListModule,
+    ProgressBarModule,
+    RadioButtonModule,
+    RatingModule,
+    ScheduleModule,
+    SelectButtonModule,
+    SlideMenuModule,
+    SliderModule,
+    SpinnerModule,
+    SplitButtonModule,
+    StepsModule,
+    TabMenuModule,
+    TabViewModule,
+    TerminalModule,
+    TieredMenuModule,
+    ToggleButtonModule,
+    ToolbarModule,
+    TooltipModule,
+    TreeModule,
+    TreeTableModule,
+    TableModule
     //  end prime ng
 
 
@@ -265,7 +270,10 @@ export const WINDOW_PROVIDERS = [
   exports: [MatToolbarModule, MatInputModule, MatTableModule],
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    DashboardPendapatanComponent,
+    DashboardSdmComponent,
+    DashboardPersediaanComponent
 
   ],
   bootstrap: [AppComponent],
@@ -273,6 +281,10 @@ export const WINDOW_PROVIDERS = [
     AppService,
     MessageService,
     WINDOW_PROVIDERS,
+    {
+      provide: HIGHCHARTS_MODULES,
+      useFactory: () => [drilldown]
+    },
     { provide: Window, useValue: window },
     AuthGuard
 

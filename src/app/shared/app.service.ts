@@ -35,8 +35,8 @@ export class AppService {
     this.http = http;
     if (this.window.location.hostname.indexOf('localhost') > -1) {
       this.urlPrefix = 'http://localhost:8000/service/transaksi/';
-      this.urlLogin = 'http://192.168.12.3:8181/jasamedika-web/auth/sign-in';
-      this.urlLogout = 'http://192.168.12.3:8181/jasamedika-web/auth/sign-out';
+      this.urlLogin = 'http://localhost:8000/service/auth/sign-in';
+      this.urlLogout = 'http://localhost:8000/service/auth/sign-out';
     } else {
       this.urlPrefix = 'https://smart.rsabhk.co.id:2222/simrs_harkit/service/transaksi/';
       this.urlLogin = 'https://smart.rsabhk.co.id:2222/jasamedika-web/auth/sign-in';
@@ -66,6 +66,13 @@ export class AppService {
       '#91e8e1', '#CD5C5C', '#FF69B4', '#FF8C00', '#9370DB', '#ADFF2F',
       '#00FF00', '#9ACD32', '#66CDAA', '#00FFFF', '#4682B4', '#800000',
       '#CD853F', '#191970', '#1E90FF', '#00CED1'];
+  }
+  getColorGiw() {
+    return ['#7cb5ec', '#75b2a3', '#9ebfcc', '#acdda8', '#d7f4d2', '#ccf2e8',
+      '#468499', '#088da5', '#00ced1', '#3399ff', '#00ff7f',
+      '#b4eeb4', '#a0db8e', '#999999', '#6897bb', '#0099cc', '#3b5998',
+      '#000080', '#191970', '#8a2be2', '#31698a', '#87ff8a', '#49e334',
+      '#13ec30', '#7faf7a', '#408055', '#09790e'];
   }
   getUrlExternal(url) {
     return this.http.get(url);

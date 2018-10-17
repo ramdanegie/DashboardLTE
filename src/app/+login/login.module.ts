@@ -7,7 +7,7 @@ import { MatCardModule, MatFormFieldModule,MatCheckboxModule, MatProgressSpinner
 import { FormsModule } from '@angular/forms';
 import {ToastModule} from 'primeng/toast';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
-
+import {GrowlModule} from 'primeng/growl';
 @NgModule({
   imports: [
     CommonModule,
@@ -22,7 +22,8 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner';
     ToastModule,
     // ToastModule.forRoot(),
     MatCheckboxModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    GrowlModule
   ],
   declarations: [LoginComponent],
 
