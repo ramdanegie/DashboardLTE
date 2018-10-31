@@ -16,17 +16,19 @@ export class LoginComponent implements OnInit {
   result: any;
   resultAkses: any;
   loading = false;
+  showLoading: boolean = false;
   constructor(public appservice: AppService, private messageService: MessageService, private router: Router,
   ) { }
 
   ngOnInit() {
   }
   keyDownFunction(event) {
-    if(event.keyCode == 13) {
+    if (event.keyCode == 13) {
       this.login();
     }
   }
   login(): void {
+    this.showLoading = true
     this.loading = true;
     window.localStorage.clear();
     var delete_cookie = function (name) {
@@ -42,6 +44,7 @@ export class LoginComponent implements OnInit {
       'kataSandi': this.password
     }
     this.appservice.postLogin(obj).subscribe(data => {
+      this.showLoading = false
       this.loading = false;
       this.result = data;
       this.messageService.add({ severity: 'success', summary: 'Sukses', detail: 'Login Sukses' });
@@ -55,7 +58,7 @@ export class LoginComponent implements OnInit {
       };
       window.localStorage.setItem('datauserlogin', JSON.stringify(dataUserLogin));
       window.localStorage.setItem('pegawai', JSON.stringify(this.result.data.pegawai));
-      
+
       this.router.navigate(['/home']);
       // this.appservice.getTransaksi('eis/hakakses?pegawaiId=' + this.result.data.pegawai.id).subscribe(data => {
       //   this.resultAkses = data;

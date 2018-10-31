@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Highcharts, Chart } from 'angular-highcharts';
 import { AppService } from 'src/app/shared/app.service';
 import * as Prism from 'prismjs';
-
+import { MessageService, Message, LazyLoadEvent } from 'primeng/api';
 @Component({
   selector: 'app-dashboard-sdm',
   templateUrl: './dashboard-sdm.component.html',
@@ -73,7 +73,8 @@ import * as Prism from 'prismjs';
           display: table-cell;
       }
   }
-`]
+`],
+  providers: [MessageService]
 })
 export class DashboardSdmComponent implements AfterViewInit, OnInit {
   public now: Date = new Date();
@@ -83,6 +84,8 @@ export class DashboardSdmComponent implements AfterViewInit, OnInit {
   chartKelompokJabatan: any;
   chartJK: any;
   chartUnitKerja: any;
+  chartUsia: any;
+  chartPendidikan: any;
   resultData: any;
   resultDataLayanan: any;
   totalPaegawai: number = 0;
@@ -90,16 +93,43 @@ export class DashboardSdmComponent implements AfterViewInit, OnInit {
   totalNonAktif: number = 0;
   totalPensiun: number = 0;
   cols: any[];
+  columnPopupLayanan: any[];
   dataSourceLayanan: any;
+  dataSourceLayananDetails: any;
   showDetailDokter: boolean = false;
-  constructor(public httpservice: AppService) {
+  loadingLayananGrid: boolean;
+  totaltarif: any;
+  totalTotal: any;
+  jumlahna: any;
+  apiTimer: any;
+  counter = 10;
+
+  constructor(public httpservice: AppService, private messageService: MessageService) {
   }
   ngOnInit() {
+    this.apiTimer = setInterval(() => {
+      this.getData()
+      this.getLayananDokter()
+    }, (this.counter * 6000)); //60 detik
+
+
     this.getData();
     this.getLayananDokter()
     this.cols = [
       { field: 'dokter', header: 'Dokter' },
       { field: 'count', header: 'Jumlah Layanan' }
+    ];
+
+    this.columnPopupLayanan = [
+      { field: 'tglpelayanan', header: 'Tgl' },
+      { field: 'nocm', header: 'No RM' },
+      { field: 'namapasien', header: 'Nama Pasien' },
+      { field: 'dokter', header: 'Dokter' },
+      { field: 'layanan', header: 'Nama Layanan' },
+      { field: 'tariff', header: 'Tarif' },
+      { field: 'jumlah', header: 'Jumlah' },
+      { field: 'totall', header: 'Total' }
+
     ];
   }
   /**
@@ -109,9 +139,34 @@ export class DashboardSdmComponent implements AfterViewInit, OnInit {
     Prism.highlightAll();
   }
   selectedGridDokter(row) {
-    this.showDetailDokter = true
     let rows = row;
-    // this.messageService.add({severity:'info', summary:'Car Selected', detail:'Vin: ' + car.vin});
+    let data = this.resultDataLayanan.data
+    let datas = []
+    this.totaltarif = 0;
+    this.totalTotal = 0;
+    this.jumlahna = 0
+    for (let i in data) {
+      if (row.iddokter == data[i].iddokter) {
+        // this.totaltarif =  this.totaltarif + parseFloat(data[i].tarif)
+
+        this.jumlahna = this.jumlahna + parseFloat(data[i].jumlah)
+        data[i].total = parseFloat(data[i].jumlah) * parseFloat(data[i].tarif)
+        this.totalTotal = this.totalTotal + parseFloat(data[i].total)
+
+        datas.push(data[i])
+      }
+    }
+
+    for (let a in datas) {
+
+      datas[a].tariff = 'Rp.' + Highcharts.numberFormat(datas[a].tarif, 0, '.', ',')
+      datas[a].totall = 'Rp.' + Highcharts.numberFormat(datas[a].total, 0, '.', ',')
+    }
+    this.totalTotal = 'Rp.' + Highcharts.numberFormat(this.totalTotal, 0, '.', ',')
+    console.log(datas)
+    this.dataSourceLayananDetails = datas
+    this.showDetailDokter = true
+    this.messageService.add({ severity: 'info', summary: 'Selected :', detail: row.dokter });
   }
   getData() {
     this.httpservice.getTransaksi('eis-sdm/get-count-pegawai').subscribe(data => {
@@ -181,10 +236,10 @@ export class DashboardSdmComponent implements AfterViewInit, OnInit {
         if (statusPegawaiss[s].statuspegawai == 'Aktif') {
           totalAktifs = parseFloat(statusPegawaiss[s].total)
         }
-        if (statusPegawaiss[s].statuspegawai == 'Pensiun') {
-          totalPensiuns = parseFloat(statusPegawaiss[s].total)
-        }
-        if (statusPegawaiss[s].statuspegawai != 'Pensiun' && statusPegawaiss[s].statuspegawai != 'Aktif') {
+        // if (statusPegawaiss[s].statuspegawai == 'Pensiun') {
+        //   totalPensiuns = parseFloat(statusPegawaiss[s].total)
+        // }
+        if (statusPegawaiss[s].statuspegawai != 'Aktif') {
           totalNonAktifs = totalNonAktifs + parseFloat(statusPegawaiss[s].total)
         }
 
@@ -651,12 +706,260 @@ export class DashboardSdmComponent implements AfterViewInit, OnInit {
       /**
     * @method EndchartUNITKERJA
     */
+      /**
+       * @method chartUSIA
+       */
+      let jumlahUsia = this.resultData.usia
+
+      // asupkeun kana series data di CHART
+      let seriesUsia = []
+      for (let z in jumlahUsia) {
+        let datana = [];
+        datana.push({
+          y: parseFloat(jumlahUsia[z].total),
+          color: this.colors[z],
+        });
+
+        seriesUsia.push({
+          name: jumlahUsia[z].usia,
+          data: datana
+        });
+      }
+
+      this.chartUsia = new Chart({
+        chart: {
+          type: 'column',
+        },
+
+        title: {
+          text: ''
+        },
+        xAxis: {
+          categories: ["Jumlah "],
+          labels: {
+            align: 'center',
+            style: {
+              fontSize: '13px',
+              fontFamily: 'Verdana, sans-serif'
+            }
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Usia'
+          }
+        },
+        plotOptions: {
+          column: {
+            // url:"#",
+            cursor: 'pointer',
+
+            dataLabels: {
+              enabled: true,
+              color: this.colors[1],
+
+              formatter: function () {
+                return Highcharts.numberFormat(this.y, 0, '.', ',') + ' Pegawai';
+              }
+            },
+            showInLegend: true
+          }
+        },
+        tooltip: {
+          formatter: function () {
+            let point = this.point,
+              s = this.x + ':' + Highcharts.numberFormat(this.y, 0, '.', ',') + ' Pegawai <br/>';
+            return s;
+
+          }
+          // headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+          // pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+          //     '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
+          // footerFormat: '</table>',
+          // shared: true,
+          // useHTML: true
+        },
+        series: seriesUsia,
+        exporting: {
+          enabled: false
+        },
+        credits: {
+          enabled: false
+        },
+        legend: {
+          enabled: true,
+          borderRadius: 5,
+          borderWidth: 1
+        },
+
+      })
+
+      // console.log(seriesKatPegawai)
+
+      // this.chartUsia = new Chart({
+      //   chart: {
+      //     plotBackgroundColor: null,
+      //     plotBorderWidth: null,
+      //     plotShadow: false,
+      //     type: 'bar'
+      //   },
+      //   title: {
+      //     text: '',
+      //   },
+      //   tooltip: {
+      //     formatter: function (e) {
+      //       let point = this.point,
+      //         s = this.percentage.toFixed(2) + ' %';//this.key + ': ' + Highcharts.numberFormat(this.y, 0, '.', ',') + ' <br/>';
+      //       return s;
+
+      //     }
+      //   },
+      //   plotOptions: {
+      //     pie: {
+      //       allowPointSelect: true,
+      //       cursor: 'pointer',
+      //       dataLabels: {
+      //         enabled: true,
+      //         color: '#000000',
+      //         connectorColor: '#000000',
+      //         formatter: function () {
+      //           return this.key + ': ' + Highcharts.numberFormat(this.y, 0, '.', ',') + ' <br/>';// this.percentage.toFixed(2) + ' %';
+      //         }
+      //       },
+      //       showInLegend: true
+      //     },
+
+      //   },
+      //   credits: {
+      //     text: 'Total : ' + totalAll
+      //     // enabled: false
+      //   },
+      //   legend: {
+      //     enabled: true,
+      //     borderRadius: 5,
+      //     borderWidth: 1
+      //   },
+      //   series: [{
+      //     type: 'bar',
+      //     name: 'Total',
+      //     // colorByPoint: true,
+      //     data: seriesUsia
+
+      //   }]
+      // })
+
+      /**
+      * @method EndchartUSIA
+      */
+      /**
+      * @method chartPendidikan
+      */
+      let jumlahPendidikan = this.resultData.pendidikan
+
+
+      // asupkeun kana series data di CHART
+      let seriesPendidikan = []
+      let slicesssss = true
+
+      for (let z in jumlahPendidikan) {
+        if (jumlahPendidikan[z].pendidikan == null)
+          jumlahPendidikan[z].pendidikan = 'Tidak di isi'
+        let datana = [];
+        datana.push({
+          y: parseFloat(jumlahPendidikan[z].total),
+          color: this.colors[z],
+          drilldown: jumlahPendidikan[z].pendidikan
+        });
+        seriesPendidikan.push({
+          name: jumlahPendidikan[z].pendidikan,
+          y: parseFloat(jumlahPendidikan[z].total),
+          // sliced: slicesssss,
+          // selected: slicesssss
+        });
+        slicesssss = false;
+      }
+      // console.log(seriesKatPegawai)
+
+      this.chartPendidikan = new Chart({
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false,
+          type: 'pie'
+        },
+        title: {
+          text: '',
+        },
+        tooltip: {
+          formatter: function (e) {
+            let point = this.point,
+              s = this.percentage.toFixed(2) + ' %';//this.key + ': ' + Highcharts.numberFormat(this.y, 0, '.', ',') + ' <br/>';
+            return s;
+
+          }
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              color: '#000000',
+              connectorColor: '#000000',
+              formatter: function () {
+                return this.key + ': ' + Highcharts.numberFormat(this.y, 0, '.', ',') + ' <br/>';// this.percentage.toFixed(2) + ' %';
+              }
+            },
+            showInLegend: true
+          },
+
+        },
+        credits: {
+          text: 'Total : ' + totalAll
+          // enabled: false
+        },
+        legend: {
+          enabled: true,
+          borderRadius: 5,
+          borderWidth: 1
+        },
+        series: [{
+          type: 'pie',
+          name: 'Total',
+          // colorByPoint: true,
+          data: seriesPendidikan
+
+        }]
+      })
+
+      /**
+      * @method EndchartPENDIIKAN
+      */
     })
   }
+  //   loadCarsLazy(event: LazyLoadEvent) {
+  //     this.loadingLayananGrid = true;
+
+  //     //in a real application, make a remote request to load data using state metadata from event
+  //     //event.first = First row offset
+  //     //event.rows = Number of rows per page
+  //     //event.sortField = Field name to sort with
+  //     //event.sortOrder = Sort order as number, 1 for asc and -1 for dec
+  //     //filters: FilterMetadata object having field as key and filter value, filter matchMode as value
+
+  //     //imitate db connection over a network
+  //     setTimeout(() => {
+  //         if (this.dataSourceLayanan) {
+  //             // this.cars = this.dataSourceLayanan.slice(event.first, (event.first + event.rows));
+  //             this.loadingLayananGrid = false;
+  //         }
+  //     }, 1000);
+  // }
   getLayananDokter() {
+    this.loadingLayananGrid = true;
     let awal = this.now.toLocaleDateString() + ' 00:00';
     let akhir = this.now.toLocaleDateString() + ' 23:59';
-    this.httpservice.getTransaksi('laporan/get-detail-layanan?tglAwal=' + awal + '&tglAkhir=' + akhir +
+    this.httpservice.getTransaksi('laporan/get-detail-layanan?tglAwal=' + '2018-06-10 00:00' + '&tglAkhir=' + '2018-06-10 23:00' +
       '&idDept=&idRuangan=&idKelompok=&idDokter=&tindakan=&kondisi=&kelas=&PetugasPe=').subscribe(data => {
         this.resultDataLayanan = data
         let arrayDok = this.resultDataLayanan.data
@@ -673,6 +976,7 @@ export class DashboardSdmComponent implements AfterViewInit, OnInit {
           }
           if (sama == false) {
             let result = {
+              iddokter: arrayDok[i].iddokter,
               dokter: arrayDok[i].dokter,
               count: parseFloat(arrayDok[i].count),
             }
@@ -680,11 +984,18 @@ export class DashboardSdmComponent implements AfterViewInit, OnInit {
           }
         }
         console.log(groupingDok)
+        this.loadingLayananGrid = false;
         this.dataSourceLayanan = groupingDok
       })
   }
-
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.dataSourceLayanan.filter = filterValue;
+  }
   /**
   * @method EndOfFile
   */
+
 }
+

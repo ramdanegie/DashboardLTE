@@ -46,3 +46,16 @@
     position: relative;
     background-image:src("assets/img/welcomeScreenNew.jpg");
 }
+.loading-style {
+  /* display: block;
+  margin-left: auto;
+  margin-right: auto; */
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: -50px;
+  margin-left: 100px;
+  height: 100%;
+}

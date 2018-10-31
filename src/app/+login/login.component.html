@@ -12,8 +12,10 @@
       <mat-card-header>
         <mat-card-title>Silahkan Login</mat-card-title>
       </mat-card-header>
+      <p-progressSpinner *ngIf="showLoading" class="loading-style"></p-progressSpinner>
       <mat-card-content>
         <form class="example-form">
+     
           <table class="example-full-width" cellspacing="0">
             <tr>
               <td>
@@ -30,6 +32,7 @@
               </td>
             </tr>
           </table>
+          
         </form>
         <mat-checkbox class="example-margin" [(ngModel)]="checked">Ingatkan Saya</mat-checkbox>
    <!-- <mat-spinner></mat-spinner> -->

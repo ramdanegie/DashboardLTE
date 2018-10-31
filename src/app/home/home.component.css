@@ -22,11 +22,13 @@
     /* display: block;
     margin-left: auto;
     margin-right: auto; */
-    position: relative;
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-top: -50px;
+    margin-left: 700px;
     height: 100%;
   }
   .agm-map {

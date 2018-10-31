@@ -13,6 +13,8 @@ let $;
 })
 
 export class HomeComponent implements AfterViewInit, OnInit {
+    apiTimer: any;
+    counter = 10;
     colorNyieun = ['#7cb5ec', '#75b2a3', '#9ebfcc', '#acdda8', '#d7f4d2', '#ccf2e8',
         '#468499', '#088da5', '#00ced1', '#3399ff', '#00ff7f',
         '#b4eeb4', '#a0db8e', '#999999', '#6897bb', '#0099cc', '#3b5998',
@@ -125,7 +127,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
     showRad: boolean = false;
     showRehab: boolean = false;
     dataTableRajal: any;
-    dataTableFarmasi:any;
+    dataTableFarmasi: any;
     totalRecords: any;
     idRuanganSearch: any;
     items: any;
@@ -154,6 +156,17 @@ export class HomeComponent implements AfterViewInit, OnInit {
 
 
     ngOnInit() {
+        this.apiTimer = setInterval(() => {
+            this.getCountPasienDaftar();
+            this.getCountTerlayani();
+            this.getTempatTidur()
+            this.getBorLos()
+            this.getTrendRajal()
+            this.getChartPenjadwalan()
+            this.getKunjunganRsandJenisPasien()
+            this.getDiagnosaAsalPerujuk()
+        }, (this.counter * 6000)); //60 detik
+
         this.items = [
             {
                 label: 'Pasien Daftar', icon: 'fa fa-refresh', command: () => {
@@ -188,8 +201,17 @@ export class HomeComponent implements AfterViewInit, OnInit {
         this.ttNonKelas = 0;
         this.ttJumlah = 0;
 
+        this.getCountPasienDaftar();
+        this.getCountTerlayani();
+        this.getTempatTidur()
+        this.getBorLos()
+        this.getTrendRajal()
+        this.getChartPenjadwalan()
+        this.getKunjunganRsandJenisPasien()
+        this.getDiagnosaAsalPerujuk()
+    }
 
-
+    getCountPasienDaftar() {
         this.appservice.getTransaksi('eis/get-count-pasien').subscribe(data => {
             this.dataPasien = data;
             this.countRajal = this.dataPasien.rawat_jalan;
@@ -201,7 +223,8 @@ export class HomeComponent implements AfterViewInit, OnInit {
             this.countRehab = this.dataPasien.rehab_medik;
             this.countTotal = this.dataPasien.jumlah;
         })
-
+    }
+    getCountTerlayani() {
         this.appservice.getTransaksi('eis/get-count-pasien-terlayani').subscribe(data => {
             this.dataPasienTerlayni = data;
             this.countRajalTerlayani = this.dataPasienTerlayni.data.rawat_jalan;
@@ -218,6 +241,8 @@ export class HomeComponent implements AfterViewInit, OnInit {
 
         })
 
+    }
+    getTempatTidur() {
         this.appservice.getTransaksi('eis/get-tempattidur-terpakai').subscribe(data2 => {
             this.tempatTidurTerpakai = data2;
             this.countGeriatri = this.tempatTidurTerpakai.geriatri;
@@ -245,6 +270,8 @@ export class HomeComponent implements AfterViewInit, OnInit {
             this.dataSource.sort = this.sort;
 
         })
+    }
+    getBorLos() {
         this.appservice.getTransaksi('eis/get-borlostoi').subscribe(data => {
             this.gridBorLos = data;
 
@@ -279,36 +306,43 @@ export class HomeComponent implements AfterViewInit, OnInit {
             // this.dataSourceBor.sort = this.sort2;
 
         })
+    }
+    getTrendRajal() {
         this.isShowTrend = true;
         this.appservice.getTransaksi('eis/get-trend-kunjungan-rawatjalan').subscribe(data => {
             this.isShowTrend = false;
-            this.trendKunjungan = data;
-            for (let i in this.trendKunjungan) {
-                this.data1.push({
-                    y: parseFloat(this.trendKunjungan[i].totalterdaftar),
+           let trend = data;
+           let data1 =[]
+           let data2 =[]
+           let data3 =[]
+           let data4 =[]
+           let categories=[]
+            for (let i in trend) {
+                data1.push({
+                    y: parseFloat(trend[i].totalterdaftar),
                     color: this.colorNyieun[i]
                 });
             }
-            for (let i in this.trendKunjungan) {
-                this.data2.push({
-                    y: parseFloat(this.trendKunjungan[i].diperiksa),
+            for (let i in trend) {
+                data2.push({
+                    y: parseFloat(trend[i].diperiksa),
                     color: this.colorNyieun[i]
                 });
             }
-            for (let i in this.trendKunjungan) {
-                this.data3.push({
-                    y: parseFloat(this.trendKunjungan[i].belumperiksa),
+            for (let i in trend) {
+                data3.push({
+                    y: parseFloat(trend[i].belumperiksa),
                     color: this.colorNyieun[i]
                 });
             }
-            for (let i in this.trendKunjungan) {
-                this.data4.push({
-                    y: parseFloat(this.trendKunjungan[i].batalregistrasi),
+            for (let i in trend) {
+                data4.push({
+                    y: parseFloat(trend[i].batalregistrasi),
                     color: this.colorNyieun[i]
                 });
             }
-            for (let i in this.trendKunjungan) {
-                this.categories.push(this.trendKunjungan[i].tanggal);
+            for (let i in trend) {
+               categories.push(trend[i].tanggal);
             }
             // console.log(this.categories);
             this.chart = new Chart({
@@ -321,7 +355,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
                 },
 
                 xAxis: {
-                    categories: this.categories,
+                    categories: categories,
                     crosshair: true,
                     // type: 'datetime',
                     //  maxZoom: 24 * 3600 * 1000, // fourteen days
@@ -403,7 +437,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
                     name: 'Total Terdaftar',
                     // pointInterval: 24 * 3600 * 1000,
                     // pointStart: Date.UTC(parseFloat(this.arr[2]), parseFloat(this.arr[1]) - 1, parseFloat('01')),
-                    data: this.data1,
+                    data: data1,
 
                 },
                 {
@@ -411,27 +445,29 @@ export class HomeComponent implements AfterViewInit, OnInit {
                     name: 'Sudah Diperiksa',
                     // pointInterval: 24 * 3600 * 1000,
                     // pointStart: Date.UTC(parseFloat(this.arr[2]), parseFloat(this.arr[1]) - 1, parseFloat('01')),
-                    data: this.data2,
+                    data: data2,
                 },
                 {
                     type: 'line',
                     name: 'Belum Diperiksa',
                     // pointInterval: 24 * 3600 * 1000,
                     // pointStart: Date.UTC(parseFloat(this.arr[2]), parseFloat(this.arr[1]) - 1, parseFloat('01')),
-                    data: this.data3,
+                    data: data3,
                 },
                 {
                     type: 'line',
                     name: 'Batal Registrasi',
                     // pointInterval: 24 * 3600 * 1000,
                     // pointStart: Date.UTC(parseFloat(this.arr[2]), parseFloat(this.arr[1]) - 1, parseFloat('01')),
-                    data: this.data4,
+                    data: data4,
                 }
                 ]
 
             })
 
         })
+    }
+    getChartPenjadwalan() {
         // chart jenis penjadwalan pie
         this.isShowCaraDaftar = true;
         this.appservice.getTransaksi('eis/get-pasien-perjenis-penjadwalan').subscribe(data => {
@@ -975,6 +1011,9 @@ export class HomeComponent implements AfterViewInit, OnInit {
             // end rad
         })
         // end pie
+    }
+    getKunjunganRsandJenisPasien() {
+
         this.appservice.getTransaksi('eis/get-kunjungan-rs').subscribe(data => {
             this.resChartKunjunganRs = data;
             this.chartKunjunganRs = new Chart({
@@ -1226,10 +1265,8 @@ export class HomeComponent implements AfterViewInit, OnInit {
             })
         })
         // end
-
-
-
-
+    }
+    getDiagnosaAsalPerujuk() {
         //   chart 10 Besar Asal Perujuk Pasien BPJS
         this.appservice.getTransaksi('eis/get-topten-asalperujuk-bpjs').subscribe(data => {
             this.data10PerujukBpjs = data;
@@ -1658,7 +1695,6 @@ export class HomeComponent implements AfterViewInit, OnInit {
             })
         })
         // end
-
     }
     // get Service detail Pasien Mendaftar
     klikDetails(idDep, terlayani) {
@@ -1690,7 +1726,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
 
         })
         if (idDep == 14 && terlayani == false) {
-            this.showFarmasi= true;
+            this.showFarmasi = true;
             this.getServicePasienTerlayani(idDep);
         } else if (terlayani == true) {
             this.getServicePasienTerlayani(idDep);
@@ -1716,17 +1752,17 @@ export class HomeComponent implements AfterViewInit, OnInit {
     getServicePasienTerlayani(idDep) {
         this.appservice.getTransaksi('eis/detail-pasien-teralayani/' + idDep).subscribe(table => {
             this.dataTableRajal = [];
-            this.dataTableFarmasi =[];
-            if(idDep == 14){
+            this.dataTableFarmasi = [];
+            if (idDep == 14) {
                 this.dataTableFarmasi = table;
                 this.totalRecords = this.dataTableFarmasi.count;
                 this.dataTableFarmasi = this.dataTableFarmasi.data;
-            }else{
+            } else {
                 this.dataTableRajal = table;
                 this.totalRecords = this.dataTableRajal.count;
                 this.dataTableRajal = this.dataTableRajal.data;
             }
-         
+
         });
     }
 
