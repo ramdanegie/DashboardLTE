@@ -52,7 +52,7 @@
       </div>
     </div>
 
-   
+
   </div>
   <div class="row">
     <div class="col-md-6 col-xs-6">
@@ -96,8 +96,8 @@
                 <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px">Daftar Produk</span>
               </div>
             </p-header>
-            <p-table #dt [columns]="columnStok" [value]="dataSourceStok" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[5,10,20]"
-              [loading]="loadingInfoStok" loadingIcon="fa fa-spinner">
+            <p-table #dt [columns]="columnStok" [value]="dataSourceStok" [rows]="10" [paginator]="true"
+              [rowsPerPageOptions]="[5,10,20]" [loading]="loadingInfoStok" loadingIcon="fa fa-spinner">
               <ng-template pTemplate="caption">
                 <div style="text-align: right">
                   <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -108,22 +108,26 @@
               <ng-template pTemplate="header" let-columns>
                 <tr>
                   <th style="width:4em">No</th>
-                  <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                    {{col.header}}
-                    <!-- <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon> -->
-    
-                  </th>
+                  <th style="width:20em">Nama Produk</th>
+                  <th>Satuan</th>
+                  <th>Stok Tersedia</th>
+                  <!-- <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{col.header}} -->
+                  <!-- <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon> -->
+
+                  <!-- </th> -->
                   <th style="width:8em"></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-index="rowIndex+1" let-rowData let-columns="columns">
                 <tr>
-                  <td>
-                    {{index}}
-                  </td>
-                  <td *ngFor="let col of columns">
+                  <td>{{index}}</td>
+                  <td>{{rowData.namaproduk}}</td>
+                  <td>{{rowData.satuanstandar}}</td>
+                  <td>{{rowData.qtyproduk}}</td>
+                  <!-- <td *ngFor="let col of columns">
                     {{rowData[col.field]}}
-                  </td>
+                  </td> -->
                   <td>
                     <button pButton icon="pi pi-search" label="Detail" (click)="selectedGridStok(rowData)"></button>
                   </td>
@@ -207,11 +211,11 @@
           </div>
         </div>
         <div class="box-body chart-responsive">
- 
+
         </div>
       </div>
     </div>
   </div>
-  
+
 
 </section>

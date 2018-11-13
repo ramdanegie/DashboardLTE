@@ -92,12 +92,14 @@ export class DashboardPersediaanComponent implements OnInit, AfterViewInit {
 
     this.columnStok = [
       { field: 'namaproduk', header: 'Nama Produk' },
-      { field: 'qtyproduk', header: 'Stok' }
+      { field: 'satuanstandar', header: 'Satuan' },
+      { field: 'qtyproduk', header: 'Stok Tersedia' }
     ];
 
     this.columnStokDetail = [
       { field: 'namaruangan', header: 'Ruangan' },
       { field: 'namaproduk', header: 'Nama Produk' },
+      { field: 'satuanstandar', header: 'Satuan' },
       { field: 'qtyproduk', header: 'Stok' }
     ];
 
@@ -146,7 +148,7 @@ export class DashboardPersediaanComponent implements OnInit, AfterViewInit {
         if (sama == false) {
           let result = {
             namaproduk: array[i].namaproduk,
-            // namaruangan: array[i].namaruangan,
+            satuanstandar: array[i].satuanstandar,
             qtyproduk: parseFloat(array[i].qtyproduk),
           }
           groupingArr.push(result)
