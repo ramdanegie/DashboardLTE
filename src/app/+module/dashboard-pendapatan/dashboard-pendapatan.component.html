@@ -246,7 +246,8 @@
           </div>
         </div>
         <div class="box-body chart-responsive">
-          <!-- <div [chart]="chartTargetRealisi"></div> -->
+            <p-progressSpinner *ngIf="isShowCapaianTarget" class="loading-style"></p-progressSpinner>
+          <div [chart]="chartTargetRealisiRJ"></div>
         </div>
         <div class="box-body chart-responsive">
           <!-- <p-panel header="Title" [toggleable]="true" [collapsed]="true">

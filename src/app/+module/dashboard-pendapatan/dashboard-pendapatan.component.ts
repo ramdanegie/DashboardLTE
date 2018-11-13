@@ -25,17 +25,20 @@ export class DashboardPendapatanComponent implements AfterViewInit, OnInit {
     tampung: any;
     isShowTrend = false
     isShowTrendPen = false
+    isShowCapaianTarget = false
     chartPerKelompokPasien: any;
     chartPenerimaan: any;
     dataChartPenerimaan: any;
     chartPenerimaanNonLayanan: any;
-    chartTargetRealisi: any;
+    chartTargetRealisiRJ: any;
+    chartTargetRealisiRI: any;
     cols: any[];
     dataGrid: any;
     loading: boolean;
     chartPerKelompokPasienPie: any;
     chartTrendPendapatan: any;
     dataChartTend: any;
+    resultRealisasiCapaian: any;
     constructor(public httpservice: AppService) {
     }
 
@@ -63,7 +66,8 @@ export class DashboardPendapatanComponent implements AfterViewInit, OnInit {
     getPendapatanRS() {
         this.isShowTrend = true;
         let tgl = this.now.toLocaleDateString();
-        this.httpservice.getTransaksi('eis-pendapatan/get-pendapatan-rs?tglAwal=' + tgl + '&tglAkhir=' + tgl).subscribe(data => {
+        let tipe ='sehari';
+        this.httpservice.getTransaksi('eis-pendapatan/get-pendapatan-rs?tipe=' + tipe ).subscribe(data => {
             this.dataChartPendapatan = data
             let array = this.dataChartPendapatan.data
             let series = [];
@@ -726,79 +730,111 @@ export class DashboardPendapatanComponent implements AfterViewInit, OnInit {
     }
 
     getTargetRealisasi() {
-        this.chartTargetRealisi = new Chart({
-            chart: {
-                zoomType: 'xy'
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            xAxis: [{
-                categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-                crosshair: true
-            }],
-            yAxis: [{
-                labels: {
-                    format: '{value}',
-                    style: {
-                        color: Highcharts.getOptions().colors[1]
-                    }
-                },
-                title: {
-                    text: 'Realisasi Pendapatan',
-                    style: {
-                        color: Highcharts.getOptions().colors[1]
-                    }
-                }
-            }, { // Secondary yAxis
-                title: {
-                    text: '',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                },
-                labels: {
-                    format: '{value}',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
-                },
-                opposite: true
-            }],
-            tooltip: {
-                shared: true
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'left',
-                x: 120,
-                verticalAlign: 'top',
-                y: 100,
-                floating: true,
-                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-            },
-            series: [{
-                name: 'Target',
-                type: 'column',
-                yAxis: 1,
-                data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
-                tooltip: {
-                    valueSuffix: ' mm'
-                }
+        this.isShowCapaianTarget = true
+        this.httpservice.getTransaksi('eis-penerimaan/get-realisasitarget').subscribe(data => {
+            this.resultRealisasiCapaian = data
+            let resultRJ = this.resultRealisasiCapaian.Rajal
+            let seriesRJTarget = []
+            let seriesRJCapaian = []
 
-            }, {
-                name: 'Capaian',
-                type: 'spline',
-                data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6],
+            for (let i in resultRJ) {
+                seriesRJTarget.push({
+                    y: parseFloat(resultRJ[i].totaltarget),
+                    color: this.colorNyieun[i]
+                })
+                seriesRJCapaian.push(
+                    parseFloat(resultRJ[i].total)
+                )
+            }
+            this.isShowCapaianTarget = false
+
+            this.chartTargetRealisiRJ = new Chart({
+                
+                chart: {
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: ''
+                },
+
+                subtitle: {
+                    text: ''
+                },
+                xAxis: [{
+                    categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    crosshair: true
+                }],
+                yAxis: [{
+                    labels: {
+                        format: '{value}',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    title: {
+                        text: 'Realisasi Pendapatan',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                }, { // Secondary yAxis
+                    title: {
+                        text: '',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    labels: {
+                        format: '{value}',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    opposite: true
+                }],
                 tooltip: {
-                    valueSuffix: '°C'
-                }
-            }]
-        });
+                    shared: true
+                },
+                exporting: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
+                // legend: {
+                //     layout: 'vertical',
+                //     align: 'left',
+                //     x: 120,
+                //     verticalAlign: 'top',
+                //     y: 100,
+                //     floating: true,
+                //     backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+                // },
+                legend: {
+                    enabled: true,
+                    borderRadius: 5,
+                    borderWidth: 1
+                },
+                series: [{
+                    name: 'Target',
+                    type: 'column',
+                    yAxis: 1,
+                    data: seriesRJTarget,
+                    // tooltip: {
+                    //     valueSuffix: ' mm'
+                    // }
+
+                }, {
+                    name: 'Capaian',
+                    type: 'spline',
+                    data: seriesRJCapaian,
+                    // tooltip: {
+                    //     valueSuffix: '°C'
+                    // }
+                }]
+            });
+        })
     }
     formatDate(value) {
         if (value == null || value == undefined) {
@@ -812,15 +848,15 @@ export class DashboardPendapatanComponent implements AfterViewInit, OnInit {
         }
     }
     getTrendPendapatan() {
-        let tgl = '';
+        let tipe = 'seminggu';
         this.isShowTrendPen = true
         // tglna di backend
-        this.httpservice.getTransaksi('eis-pendapatan/get-pendapatan-rs?tglAwal=' + tgl + '&tglAkhir=' + tgl).subscribe(data => {
+        this.httpservice.getTransaksi('eis-pendapatan/get-pendapatan-rs?tipe='+tipe).subscribe(data => {
 
             this.dataChartTend = data
             let array = this.dataChartTend.data
             let categories = []
-            let periodeCatego =[]
+            let periodeCatego = []
             // totalkeun hela
             for (let i in array) {
                 array[i].tgl = new Date(array[i].tglpencarian).toDateString()//.substring(4, 10)
@@ -874,7 +910,7 @@ export class DashboardPendapatanComponent implements AfterViewInit, OnInit {
                         text: 'Jumlah'
                     }
                 },
-              
+
                 legend: {
                     layout: 'vertical',
                     align: 'right',
@@ -912,7 +948,7 @@ export class DashboardPendapatanComponent implements AfterViewInit, OnInit {
                             color: this.colors[1],
 
                             formatter: function () {
-                                 return 'Rp. ' + Highcharts.numberFormat(this.y, 0, '.', ',');
+                                return 'Rp. ' + Highcharts.numberFormat(this.y, 0, '.', ',');
                             }
                         },
                         showInLegend: true
